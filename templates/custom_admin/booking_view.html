@@ -1,0 +1,159 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Booking #{{ booking.id }}{% endblock %}
+{% block page_title %}📋 Booking Details #{{ booking.id }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Booking Details -->
+    <div class="col-md-8">
+        <div class="content-card">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">🕉️ Puja Information</h5>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Puja Name</label>
+                    <p style="font-size: 1.2rem; color: #8b0000; font-weight: 700; margin: 0;">{{ booking.puja.name }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Category</label>
+                    <p style="margin: 0;">
+                        {% if booking.puja.category %}
+                        <span class="badge badge-custom" style="background: linear-gradient(135deg, #ff6b35 0%, #ffc107 100%); font-size: 1rem;">
+                            {{ booking.puja.category.name }}
+                        </span>
+                        {% else %}
+                        <span class="text-muted">No Category</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <hr style="margin: 1.5rem 0;">
+
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">👤 Customer Information</h5>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Full Name</label>
+                    <p style="font-size: 1.1rem; color: #2c2c2c; margin: 0;">{{ booking.customer_name }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Email</label>
+                    <p style="margin: 0;"><a href="mailto:{{ booking.customer_email }}">{{ booking.customer_email }}</a></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Phone</label>
+                    <p style="margin: 0;"><a href="tel:{{ booking.customer_phone }}">{{ booking.customer_phone }}</a></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Booking Date</label>
+                    <p style="font-size: 1.1rem; color: #2c2c2c; margin: 0;">{{ booking.booking_date|date:"d M, Y" }}</p>
+                </div>
+            </div>
+
+            {% if booking.special_requests %}
+            <hr style="margin: 1.5rem 0;">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1rem;">📝 Special Requests</h5>
+            <div style="background: #fff9f0; border: 2px solid #d4a574; border-radius: 10px; padding: 1rem;">
+                <p style="margin: 0; color: #5d4037;">{{ booking.special_requests }}</p>
+            </div>
+            {% endif %}
+
+            <hr style="margin: 1.5rem 0;">
+
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">💰 Payment Information</h5>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label style="color: #666; font-weight: 600;">Total Amount</label>
+                    <p style="font-size: 1.5rem; color: #28a745; font-weight: 700; margin: 0;">₹{{ booking.total_amount }}</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label style="color: #666; font-weight: 600;">Payment Status</label>
+                    <p style="margin: 0;">
+                        <span class="badge badge-custom {% if booking.payment_status == 'paid' %}bg-success{% else %}bg-danger{% endif %}" style="font-size: 1rem;">
+                            {{ booking.get_payment_status_display }}
+                        </span>
+                    </p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label style="color: #666; font-weight: 600;">Booking Status</label>
+                    <p style="margin: 0;">
+                        <span class="badge badge-custom bg-{{ booking.status_badge_class }}" style="font-size: 1rem;">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <hr style="margin: 1.5rem 0;">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Created At</label>
+                    <p style="margin: 0;">{{ booking.created_at|date:"d M, Y h:i A" }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Last Updated</label>
+                    <p style="margin: 0;">{{ booking.updated_at|date:"d M, Y h:i A" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions Sidebar -->
+    <div class="col-md-4">
+        <div class="content-card">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">⚙️ Actions</h5>
+            
+            <form method="POST" action="{% url 'custom_admin:booking_update_status' booking.id %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Update Status</label>
+                    <select name="status" class="form-select" required>
+                        <option value="pending" {% if booking.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="confirmed" {% if booking.status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                        <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="cancelled" {% if booking.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary-custom w-100">
+                    <i class="bi bi-check-circle"></i> Update Status
+                </button>
+            </form>
+
+            <hr style="margin: 1.5rem 0;">
+
+            <div class="d-grid gap-2">
+                {% if booking.payment %}
+                <a href="{% url 'custom_admin:payment_view' booking.payment.id %}" class="btn btn-success-custom">
+                    <i class="bi bi-credit-card"></i> View Payment
+                </a>
+                {% endif %}
+                
+                <a href="{% url 'custom_admin:booking_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="content-card mt-3">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1rem;">📊 Quick Stats</h5>
+            <div style="background: linear-gradient(135deg, #fff9f0 0%, #ffe8cc 100%); border-radius: 10px; padding: 1rem; text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">
+                    {% if booking.payment_status == 'paid' %}✅{% else %}⏳{% endif %}
+                </div>
+                <p style="margin: 0; color: #666; font-size: 0.9rem;">
+                    {% if booking.payment_status == 'paid' %}
+                        Payment Completed
+                    {% else %}
+                        Awaiting Payment
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

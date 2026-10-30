@@ -1,0 +1,71 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}{% if edit_mode %}Edit{% else %}Add{% endif %} Category{% endblock %}
+{% block page_title %}{% if edit_mode %}✏️ Edit Category{% else %}➕ Add New Category{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="content-card">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">📂 Category Information</h5>
+                
+                <div class="mb-4">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Category Name (English) *</label>
+                    <input type="text" name="name" class="form-control" value="{% if edit_mode %}{{ category.name }}{% endif %}" placeholder="e.g., Navagraha Pujas" required>
+                    <small class="text-muted">This will be displayed on the website</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Category Name (Telugu)</label>
+                    <input type="text" name="name_te" class="form-control" value="{% if edit_mode %}{{ category.name_te }}{% endif %}" placeholder="తెలుగు పేరు">
+                    <small class="text-muted">Optional: Telugu translation of the category name</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Description (English)</label>
+                    <textarea name="description" class="form-control" rows="4" placeholder="Brief description of this category...">{% if edit_mode %}{{ category.description }}{% endif %}</textarea>
+                    <small class="text-muted">Optional: Describe what types of pujas belong to this category</small>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Description (Telugu)</label>
+                    <textarea name="description_te" class="form-control" rows="4" placeholder="వివరణ...">{% if edit_mode %}{{ category.description_te }}{% endif %}</textarea>
+                    <small class="text-muted">Optional: Telugu translation of the description</small>
+                </div>
+
+                <hr style="margin: 2rem 0;">
+
+                <!-- Preview Box -->
+                <div style="background: linear-gradient(135deg, #fff9f0 0%, #ffe8cc 100%); border: 3px solid #d4a574; border-radius: 15px; padding: 2rem; margin-bottom: 2rem;">
+                    <h6 style="color: #8b0000; font-weight: 700; margin-bottom: 1rem;">📋 Preview</h6>
+                    <p style="color: #666; margin: 0;">This is how your category will appear in the admin panel and on the website.</p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-grid gap-3">
+                    <button type="submit" class="btn btn-primary-custom btn-lg">
+                        <i class="bi bi-check-circle"></i> {% if edit_mode %}Update Category{% else %}Create Category{% endif %}
+                    </button>
+                    <a href="{% url 'custom_admin:category_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Info Card -->
+        <div class="content-card mt-3">
+            <h6 style="color: #8b0000; font-weight: 700; margin-bottom: 1rem;">💡 Tips</h6>
+            <ul style="color: #5d4037; line-height: 1.8; margin: 0; padding-left: 1.5rem;">
+                <li>Choose clear, descriptive category names</li>
+                <li>Categories help users find pujas more easily</li>
+                <li>You can add Telugu translations for bilingual support</li>
+                <li>Keep descriptions concise and informative</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Manage Bookings{% endblock %}
+{% block page_title %}📅 Manage Bookings{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <!-- Header with Filters and Search -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h4 style="color: #8b0000; font-weight: 700; margin: 0;">All Bookings ({{ bookings.count }})</h4>
+        
+        <div class="d-flex gap-2 flex-wrap">
+            <!-- Status Filter -->
+            <div class="btn-group" role="group">
+                <a href="{% url 'custom_admin:booking_list' %}" class="btn btn-sm {% if not status_filter %}btn-primary-custom{% else %}btn-outline-secondary{% endif %}">
+                    All
+                </a>
+                <a href="?status=pending" class="btn btn-sm {% if status_filter == 'pending' %}btn-primary-custom{% else %}btn-outline-secondary{% endif %}">
+                    Pending
+                </a>
+                <a href="?status=confirmed" class="btn btn-sm {% if status_filter == 'confirmed' %}btn-primary-custom{% else %}btn-outline-secondary{% endif %}">
+                    Confirmed
+                </a>
+                <a href="?status=completed" class="btn btn-sm {% if status_filter == 'completed' %}btn-primary-custom{% else %}btn-outline-secondary{% endif %}">
+                    Completed
+                </a>
+                <a href="?status=cancelled" class="btn btn-sm {% if status_filter == 'cancelled' %}btn-primary-custom{% else %}btn-outline-secondary{% endif %}">
+                    Cancelled
+                </a>
+            </div>
+
+            <!-- Search -->
+            <form method="GET" class="d-flex gap-2">
+                {% if status_filter %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
+                <input type="text" name="search" class="form-control" placeholder="Search bookings..." value="{{ search_query }}" style="width: 250px;">
+                <button type="submit" class="btn btn-success-custom">
+                    <i class="bi bi-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bookings Table -->
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Customer</th>
+                    <th>Puja</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td><strong>#{{ booking.id }}</strong></td>
+                    <td>
+                        <div>
+                            <strong style="color: #8b0000;">{{ booking.customer_name }}</strong><br>
+                            <small style="color: #666;">{{ booking.customer_email }}</small><br>
+                            <small style="color: #666;">{{ booking.customer_phone }}</small>
+                        </div>
+                    </td>
+                    <td>{{ booking.puja.name }}</td>
+                    <td>{{ booking.booking_date|date:"d M, Y" }}</td>
+                    <td><strong style="color: #28a745;">₹{{ booking.total_amount }}</strong></td>
+                    <td>
+                        <span class="badge badge-custom bg-{{ booking.status_badge_class }}">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge badge-custom {% if booking.payment_status == 'paid' %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ booking.get_payment_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <small style="color: #666;">{{ booking.created_at|date:"d M, Y" }}</small>
+                    </td>
+                    <td>
+                        <a href="{% url 'custom_admin:booking_view' booking.id %}" class="btn btn-sm btn-success-custom">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-5">
+                        <div style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;">📅</div>
+                        <p style="color: #999;">No bookings found</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

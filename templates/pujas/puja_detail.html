@@ -1,0 +1,839 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{{ puja.name }} - VedaMandir{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        font-family: 'Noto Sans Telugu', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #faf8f3;
+        position: relative;
+    }
+
+    /* Decorative Background Mandala Pattern */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(circle, transparent 30%, rgba(255, 107, 53, 0.03) 30%, rgba(255, 107, 53, 0.03) 31%, transparent 31%),
+                    radial-gradient(circle, transparent 50%, rgba(255, 193, 7, 0.02) 50%, rgba(255, 193, 7, 0.02) 51%, transparent 51%);
+        border-radius: 50%;
+        z-index: 0;
+        pointer-events: none;
+        animation: slowRotate 60s linear infinite;
+    }
+
+    @keyframes slowRotate {
+        from { transform: translate(-50%, -50%) rotate(0deg); }
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Hero with Traditional Border Pattern */
+    .hero-section {
+        background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
+        padding: 2rem 0 4rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 15px;
+        background: repeating-linear-gradient(
+            90deg,
+            #ff6b35 0px,
+            #ff6b35 20px,
+            #ffc107 20px,
+            #ffc107 40px,
+            #ff6b35 40px,
+            #ff6b35 60px
+        );
+    }
+
+    .hero-section::after {
+        content: '🕉️ OM SHANTI 🕉️';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 8rem;
+        color: rgba(255, 255, 255, 0.05);
+        font-weight: 700;
+        white-space: nowrap;
+        z-index: 0;
+    }
+
+    .breadcrumb {
+        position: relative;
+        z-index: 1;
+    }
+
+    .breadcrumb a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .breadcrumb a:hover {
+        color: #ffc107;
+    }
+
+    /* Main Content Area with Scroll Snap */
+    .main-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Image Section with Traditional Frame */
+    .image-section {
+        position: relative;
+        margin: -3rem auto 3rem;
+        max-width: 900px;
+        z-index: 2;
+    }
+
+    .traditional-frame {
+        background: white;
+        padding: 25px;
+        border-radius: 30px;
+        box-shadow: 
+            0 0 0 5px #d4a574,
+            0 0 0 10px white,
+            0 0 0 15px #ff6b35,
+            0 20px 60px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    .traditional-frame::before,
+    .traditional-frame::after {
+        content: '🪷';
+        position: absolute;
+        font-size: 3rem;
+        z-index: 3;
+    }
+
+    .traditional-frame::before {
+        top: -20px;
+        left: -20px;
+        transform: rotate(-15deg);
+    }
+
+    .traditional-frame::after {
+        bottom: -20px;
+        right: -20px;
+        transform: rotate(15deg);
+    }
+
+    .puja-image {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        border-radius: 20px;
+        display: block;
+    }
+
+    .category-badge {
+        position: absolute;
+        top: 40px;
+        right: 40px;
+        background: linear-gradient(135deg, #ff6b35 0%, #ffc107 100%);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1rem;
+        box-shadow: 0 5px 20px rgba(255, 107, 53, 0.5);
+        z-index: 4;
+    }
+
+    /* Title Section with Decorative Elements */
+    .title-section {
+        text-align: center;
+        padding: 3rem 0;
+        position: relative;
+    }
+
+    .puja-title {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        font-weight: 700;
+        color: #8b0000;
+        font-family: 'Georgia', serif;
+        margin: 0 0 1rem 0;
+        position: relative;
+        display: inline-block;
+    }
+
+    .puja-title::before,
+    .puja-title::after {
+        content: '🔱';
+        font-size: 2.5rem;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .puja-title::before {
+        left: -80px;
+    }
+
+    .puja-title::after {
+        right: -80px;
+    }
+
+    .puja-subtitle {
+        font-size: 1.4rem;
+        color: #5d4037;
+        max-width: 800px;
+        margin: 0 auto 2rem;
+        line-height: 1.8;
+        font-weight: 500;
+    }
+
+    .divider {
+        text-align: center;
+        font-size: 3rem;
+        margin: 2rem 0;
+    }
+
+    /* Content Sections with Alternating Layouts */
+    .content-section {
+        background: white;
+        border-radius: 30px;
+        padding: 3rem;
+        margin: 3rem 0;
+        box-shadow: 0 10px 40px rgba(139, 0, 0, 0.1);
+        border: 3px solid transparent;
+        background-clip: padding-box;
+        position: relative;
+    }
+
+    .content-section::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: -3px;
+        right: -3px;
+        bottom: -3px;
+        background: linear-gradient(135deg, #ff6b35, #ffc107, #ff6b35);
+        border-radius: 30px;
+        z-index: -1;
+    }
+
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .section-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        box-shadow: 0 5px 20px rgba(139, 0, 0, 0.3);
+        flex-shrink: 0;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #8b0000;
+        font-family: 'Georgia', serif;
+        margin: 0;
+    }
+
+    .section-content {
+        font-size: 1.15rem;
+        line-height: 1.9;
+        color: #4a4a4a;
+    }
+
+    /* Benefits with Unique Card Style */
+    .benefits-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .benefit-card {
+        background: linear-gradient(135deg, #fff9f0 0%, #ffe8cc 100%);
+        border: 3px solid #d4a574;
+        border-radius: 20px;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s ease;
+    }
+
+    .benefit-card::before {
+        content: '✨';
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 2rem;
+        opacity: 0.3;
+    }
+
+    .benefit-card:hover {
+        transform: translateY(-10px) rotate(2deg);
+        box-shadow: 0 15px 40px rgba(212, 165, 116, 0.4);
+        border-color: #ff6b35;
+    }
+
+    .benefit-number {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #ff6b35 0%, #ffc107 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        color: white;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    .benefit-text {
+        font-size: 1.1rem;
+        color: #5d4037;
+        font-weight: 500;
+        line-height: 1.7;
+    }
+
+    /* What You Get - Hexagon Style */
+    .offerings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 3rem;
+        margin: 3rem 0;
+        justify-items: center;
+    }
+
+    .offering-item {
+        text-align: center;
+        transition: all 0.4s ease;
+    }
+
+    .offering-hexagon {
+        width: 150px;
+        height: 150px;
+        background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
+        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 10px 30px rgba(139, 0, 0, 0.4);
+        transition: all 0.4s ease;
+    }
+
+    .offering-item:hover .offering-hexagon {
+        transform: rotate(60deg) scale(1.1);
+        background: linear-gradient(135deg, #ff6b35 0%, #ffc107 100%);
+    }
+
+    .offering-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #8b0000;
+        margin: 0.5rem 0;
+    }
+
+    .offering-desc {
+        color: #5d4037;
+        font-size: 0.95rem;
+    }
+
+    /* FAQ Accordion with Traditional Style */
+    .faq-container {
+        margin: 2rem 0;
+    }
+
+    .faq-item {
+        background: linear-gradient(135deg, #fff9f0 0%, #ffffff 100%);
+        border: 2px solid #d4a574;
+        border-radius: 15px;
+        margin: 1.5rem 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+        border-color: #ff6b35;
+        box-shadow: 0 5px 20px rgba(255, 107, 53, 0.2);
+    }
+
+    .faq-question {
+        padding: 1.5rem 2rem;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #8b0000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(90deg, transparent 0%, rgba(255, 107, 53, 0.05) 100%);
+    }
+
+    .faq-icon {
+        width: 35px;
+        height: 35px;
+        background: linear-gradient(135deg, #ff6b35 0%, #ffc107 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1.3rem;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .faq-item.active .faq-icon {
+        transform: rotate(45deg);
+    }
+
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease, padding 0.4s ease;
+        padding: 0 2rem;
+        color: #5d4037;
+        font-size: 1.05rem;
+        line-height: 1.8;
+    }
+
+    .faq-item.active .faq-answer {
+        max-height: 500px;
+        padding: 0 2rem 1.5rem 2rem;
+    }
+
+    /* Sticky Price Sidebar */
+    .price-sidebar {
+        position: sticky;
+        top: 20px;
+        background: white;
+        border-radius: 25px;
+        padding: 2.5rem;
+        box-shadow: 0 15px 50px rgba(139, 0, 0, 0.15);
+        border: 4px solid transparent;
+        background-clip: padding-box;
+    }
+
+    .price-sidebar::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        background: linear-gradient(135deg, #ff6b35, #ffc107, #ff6b35);
+        border-radius: 25px;
+        z-index: -1;
+    }
+
+    .price-header {
+        text-align: center;
+        padding-bottom: 1.5rem;
+        border-bottom: 3px solid #ffe8cc;
+        margin-bottom: 1.5rem;
+    }
+
+    .price-label {
+        font-size: 1.1rem;
+        color: #5d4037;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .price-amount {
+        font-size: 3.5rem;
+        font-weight: 700;
+        color: #28a745;
+        margin: 0;
+    }
+
+    .price-details {
+        margin: 2rem 0;
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 2px solid #f5f5f5;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-icon {
+        font-size: 1.8rem;
+        width: 45px;
+        text-align: center;
+    }
+
+    .detail-content {
+        flex: 1;
+    }
+
+    .detail-label {
+        font-size: 0.9rem;
+        color: #888;
+        margin: 0;
+    }
+
+    .detail-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2c2c2c;
+        margin: 0;
+    }
+
+    .btn-book-now {
+        background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
+        color: white;
+        padding: 1.3rem 2rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(139, 0, 0, 0.4);
+        margin-top: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-book-now::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-book-now:hover::before {
+        left: 100%;
+    }
+
+    .btn-book-now:hover {
+        background: linear-gradient(135deg, #a30000 0%, #d40000 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 12px 35px rgba(139, 0, 0, 0.5);
+        color: white;
+    }
+
+    .btn-book-now:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    @media (max-width: 768px) {
+        .puja-title::before,
+        .puja-title::after {
+            display: none;
+        }
+
+        .traditional-frame {
+            padding: 15px;
+        }
+
+        .puja-image {
+            height: 300px;
+        }
+
+        .content-section {
+            padding: 2rem 1.5rem;
+        }
+
+        .price-sidebar {
+            position: static;
+            margin-top: 3rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent mb-0">
+                <li class="breadcrumb-item"><a href="/">{% trans "Home" %}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'pujas:puja_list' %}">{% trans "Pujas" %}</a></li>
+                <li class="breadcrumb-item active text-white" aria-current="page">{{ puja.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="container">
+        <!-- Image Section with Traditional Frame -->
+        <div class="image-section">
+            <div class="traditional-frame">
+                {% if puja.image %}
+                <img src="{{ puja.image.url }}" alt="{{ puja.name }}" class="puja-image">
+                {% else %}
+                <img src="{% static 'images/nava_graha.jpeg' %}" alt="{{ puja.name }}" class="puja-image">
+                {% endif %}
+                <div class="category-badge">{{ puja.category.name }}</div>
+            </div>
+        </div>
+
+        <!-- Title Section -->
+        <div class="title-section">
+            <h1 class="puja-title">{{ puja.name }}</h1>
+            <p class="puja-subtitle">{{ puja.short_description }}</p>
+        </div>
+
+        <div class="divider">🪷</div>
+
+        <div class="row">
+            <!-- Left Column: Content -->
+            <div class="col-lg-8">
+                <!-- About Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-icon">📖</div>
+                        <h2 class="section-title">{% trans "About This Sacred Puja" %}</h2>
+                    </div>
+                    <div class="section-content">
+                        {{ puja.description|linebreaks }}
+                    </div>
+                </div>
+
+                <div class="divider">🕉️</div>
+
+                <!-- Benefits Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-icon">✨</div>
+                        <h2 class="section-title">{% trans "Divine Benefits" %}</h2>
+                    </div>
+                    <div class="benefits-grid">
+                        {% if puja.benefits %}
+                            {% for benefit in puja.benefits.split|slice:":6" %}
+                            <div class="benefit-card">
+                                <div class="benefit-number">{{ forloop.counter }}</div>
+                                <div class="benefit-text">{{ benefit }}</div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="benefit-card">
+                                <div class="benefit-number">1</div>
+                                <div class="benefit-text">{% trans "Brings spiritual blessings and peace" %}</div>
+                            </div>
+                            <div class="benefit-card">
+                                <div class="benefit-number">2</div>
+                                <div class="benefit-text">{% trans "Removes obstacles and negativity" %}</div>
+                            </div>
+                            <div class="benefit-card">
+                                <div class="benefit-number">3</div>
+                                <div class="benefit-text">{% trans "Enhances prosperity and well-being" %}</div>
+                            </div>
+                            <div class="benefit-card">
+                                <div class="benefit-number">4</div>
+                                <div class="benefit-text">{% trans "Fulfills wishes and desires" %}</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="divider">🪷</div>
+
+                <!-- What You'll Get Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-icon">🎁</div>
+                        <h2 class="section-title">{% trans "What You Receive" %}</h2>
+                    </div>
+                    <div class="offerings-grid">
+                        <div class="offering-item">
+                            <div class="offering-hexagon">📿</div>
+                            <h4 class="offering-title">{% trans "Prasadam" %}</h4>
+                            <p class="offering-desc">{% trans "Sacred offerings blessed during puja" %}</p>
+                        </div>
+                        <div class="offering-item">
+                            <div class="offering-hexagon">🎥</div>
+                            <h4 class="offering-title">{% trans "Video Recording" %}</h4>
+                            <p class="offering-desc">{% trans "Complete puja video sent to you" %}</p>
+                        </div>
+                        <div class="offering-item">
+                            <div class="offering-hexagon">📜</div>
+                            <h4 class="offering-title">{% trans "Certificate" %}</h4>
+                            <p class="offering-desc">{% trans "Puja completion certificate" %}</p>
+                        </div>
+                        <div class="offering-item">
+                            <div class="offering-hexagon">🙏</div>
+                            <h4 class="offering-title">{% trans "Sankalpa" %}</h4>
+                            <p class="offering-desc">{% trans "Performed in your name" %}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider">🕉️</div>
+
+                <!-- FAQ Section -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <div class="section-icon">❓</div>
+                        <h2 class="section-title">{% trans "Frequently Asked Questions" %}</h2>
+                    </div>
+                    <div class="faq-container">
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                {% trans "Can I perform the puja from a distance?" %}
+                                <div class="faq-icon">+</div>
+                            </div>
+                            <div class="faq-answer">
+                                {% trans "Yes, you can book and perform the puja from anywhere. Our experienced priests will perform the ritual on your behalf with your sankalpa (intention)." %}
+                            </div>
+                        </div>
+
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                {% trans "Can puja be performed without horoscope?" %}
+                                <div class="faq-icon">+</div>
+                            </div>
+                            <div class="faq-answer">
+                                {% trans "Yes, basic pujas can be performed without horoscope details. However, for specific remedial pujas, horoscope information helps in achieving better results." %}
+                            </div>
+                        </div>
+
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                {% trans "Should I repeat the puja after performing it once?" %}
+                                <div class="faq-icon">+</div>
+                            </div>
+                            <div class="faq-answer">
+                                {% trans "It depends on the type of puja. Some pujas are one-time rituals, while others like Navagraha puja can be repeated periodically for continued benefits." %}
+                            </div>
+                        </div>
+
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                {% trans "How will I receive the prasadam and video?" %}
+                                <div class="faq-icon">+</div>
+                            </div>
+                            <div class="faq-answer">
+                                {% trans "The prasadam will be shipped to your address within 3-5 business days. The puja video recording will be shared via email or WhatsApp within 24 hours of completion." %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Price Card -->
+            <div class="col-lg-4">
+                <div class="price-sidebar">
+                    <div class="price-header">
+                        <div class="price-label">{% trans "Puja Dakshina" %}</div>
+                        <div class="price-amount">₹{{ puja.price }}</div>
+                    </div>
+
+                    <div class="price-details">
+                        <div class="detail-row">
+                            <div class="detail-icon">⏱️</div>
+                            <div class="detail-content">
+                                <p class="detail-label">{% trans "Duration" %}</p>
+                                <p class="detail-value">{{ puja.duration }} {% trans "minutes" %}</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon">📅</div>
+                            <div class="detail-content">
+                                <p class="detail-label">{% trans "Availability" %}</p>
+                                <p class="detail-value">
+                                    {% if puja.is_active %}
+                                    <span style="color: #28a745;">✓ {% trans "Available" %}</span>
+                                    {% else %}
+                                    <span style="color: #dc3545;">✗ {% trans "Unavailable" %}</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon">🗣️</div>
+                            <div class="detail-content">
+                                <p class="detail-label">{% trans "Languages" %}</p>
+                                <p class="detail-value">{% trans "Telugu, Sanskrit" %}</p>
+                            </div>
+                        </div>
+
+                        <div class="detail-row">
+                            <div class="detail-icon">👥</div>
+                            <div class="detail-content">
+                                <p class="detail-label">{% trans "Priest" %}</p>
+                                <p class="detail-value">{% trans "Experienced Vedic" %}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if puja.is_active %}
+                    <a href="{% url 'bookings:create_booking' puja.id %}" class="btn-book-now">
+                        🙏 {% trans "Book This Puja" %}
+                    </a>
+                    {% else %}
+                    <button class="btn-book-now" disabled>
+                        {% trans "Currently Unavailable" %}
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="height: 5rem;"></div>
+
+<script>
+function toggleFaq(element) {
+    // Close all other FAQs
+    document.querySelectorAll('.faq-item').forEach(item => {
+        if (item !== element && item.classList.contains('active')) {
+            item.classList.remove('active');
+        }
+    });
+    
+    // Toggle current FAQ
+    element.classList.toggle('active');
+}
+</script>
+
+{% endblock %}

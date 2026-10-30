@@ -1,0 +1,121 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}{% if edit_mode %}Edit{% else %}Add{% endif %} Puja{% endblock %}
+{% block page_title %}{% if edit_mode %}✏️ Edit Puja{% else %}➕ Add New Puja{% endif %}{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-8">
+                <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">Basic Information</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Puja Name (English) *</label>
+                    <input type="text" name="name" class="form-control" value="{% if edit_mode %}{{ puja.name }}{% endif %}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Puja Name (Telugu)</label>
+                    <input type="text" name="name_te" class="form-control" value="{% if edit_mode %}{{ puja.name_te }}{% endif %}">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Category</label>
+                    <select name="category" class="form-select">
+                        <option value="">Select Category</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if edit_mode and puja.category.id == category.id %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Description (English) *</label>
+                    <textarea name="description" class="form-control" rows="5" required>{% if edit_mode %}{{ puja.description }}{% endif %}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Description (Telugu)</label>
+                    <textarea name="description_te" class="form-control" rows="5">{% if edit_mode %}{{ puja.description_te }}{% endif %}</textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" style="font-weight: 600; color: #5d4037;">Price (₹) *</label>
+                        <input type="number" name="price" class="form-control" step="0.01" value="{% if edit_mode %}{{ puja.price }}{% endif %}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" style="font-weight: 600; color: #5d4037;">Duration *</label>
+                        <input type="text" name="duration" class="form-control" placeholder="e.g., 60 minutes" value="{% if edit_mode %}{{ puja.duration }}{% endif %}" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Benefits *</label>
+                    <textarea name="benefits" class="form-control" rows="4" placeholder="List the benefits of this puja..." required>{% if edit_mode %}{{ puja.benefits }}{% endif %}</textarea>
+                    <small class="text-muted">Separate each benefit with a new line</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Requirements</label>
+                    <textarea name="requirements" class="form-control" rows="3" placeholder="What's required from the user...">{% if edit_mode %}{{ puja.requirements }}{% endif %}</textarea>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-4">
+                <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">Settings & Image</h5>
+
+                <div class="mb-3">
+                    <label class="form-label" style="font-weight: 600; color: #5d4037;">Puja Image</label>
+                    {% if edit_mode and puja.image %}
+                    <div class="mb-2">
+                        <img src="{{ puja.image.url }}" alt="{{ puja.name }}" style="width: 100%; border-radius: 12px; border: 3px solid #d4a574;">
+                    </div>
+                    {% endif %}
+                    <input type="file" name="image" class="form-control" accept="image/*">
+                    <small class="text-muted">Recommended: 800x600px</small>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check form-switch" style="padding-left: 2.5rem;">
+                        <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if edit_mode and puja.is_active or not edit_mode %}checked{% endif %} style="width: 3rem; height: 1.5rem;">
+                        <label class="form-check-label" for="is_active" style="font-weight: 600; color: #5d4037; margin-left: 0.5rem;">
+                            Active Status
+                        </label>
+                    </div>
+                    <small class="text-muted">Users can book this puja</small>
+                </div>
+
+                <div class="mb-3">
+                    <div class="form-check form-switch" style="padding-left: 2.5rem;">
+                        <input class="form-check-input" type="checkbox" name="featured" id="featured" {% if edit_mode and puja.featured %}checked{% endif %} style="width: 3rem; height: 1.5rem;">
+                        <label class="form-check-label" for="featured" style="font-weight: 600; color: #5d4037; margin-left: 0.5rem;">
+                            Featured Puja
+                        </label>
+                    </div>
+                    <small class="text-muted">Show on homepage</small>
+                </div>
+
+                <hr style="margin: 2rem 0;">
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary-custom btn-lg">
+                        <i class="bi bi-check-circle"></i> {% if edit_mode %}Update{% else %}Create{% endif %} Puja
+                    </button>
+                    <a href="{% url 'custom_admin:puja_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

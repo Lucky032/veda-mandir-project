@@ -1,0 +1,104 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Manage Payments{% endblock %}
+{% block page_title %}💳 Manage Payments{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <!-- Header with Filter -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h4 style="color: #8b0000; font-weight: 700; margin: 0;">All Payments ({{ payments.count }})</h4>
+        
+        <!-- Status Filter -->
+        <div class="btn-group" role="group">
+            <a href="{% url 'custom_admin:payment_list' %}" class="btn btn-sm {% if not status_filter %}btn-primary-custom{% else %}btn-outline-secondary{% endif %}">
+                All
+            </a>
+            <a href="?status=pending" class="btn btn-sm {% if status_filter == 'pending' %}btn-primary-custom{% else %}btn-outline-secondary{% endif %}">
+                Pending
+            </a>
+            <a href="?status=completed" class="btn btn-sm {% if status_filter == 'completed' %}btn-primary-custom{% else %}btn-outline-secondary{% endif %}">
+                Completed
+            </a>
+            <a href="?status=failed" class="btn btn-sm {% if status_filter == 'failed' %}btn-primary-custom{% else %}btn-outline-secondary{% endif %}">
+                Failed
+            </a>
+            <a href="?status=refunded" class="btn btn-sm {% if status_filter == 'refunded' %}btn-primary-custom{% else %}btn-outline-secondary{% endif %}">
+                Refunded
+            </a>
+        </div>
+    </div>
+
+    <!-- Payments Table -->
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Booking ID</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Transaction ID</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr>
+                    <td><strong>#{{ payment.id }}</strong></td>
+                    <td>
+                        <a href="{% url 'custom_admin:booking_view' payment.booking.id %}" style="color: #ff6b35; font-weight: 600;">
+                            #{{ payment.booking.id }}
+                        </a>
+                    </td>
+                    <td>
+                        <div>
+                            <strong style="color: #8b0000;">{{ payment.booking.customer_name }}</strong><br>
+                            <small style="color: #666;">{{ payment.user.username }}</small>
+                        </div>
+                    </td>
+                    <td><strong style="color: #28a745; font-size: 1.1rem;">₹{{ payment.amount }}</strong></td>
+                    <td>
+                        <span class="badge badge-custom" style="background: #6c757d;">
+                            {{ payment.get_payment_method_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if payment.transaction_id %}
+                        <code style="background: #f0f0f0; padding: 0.3rem 0.6rem; border-radius: 5px; font-size: 0.85rem;">
+                            {{ payment.transaction_id|truncatechars:15 }}
+                        </code>
+                        {% else %}
+                        <span class="text-muted">N/A</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-custom bg-{{ payment.status_badge_class }}">
+                            {{ payment.get_payment_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <small style="color: #666;">{{ payment.payment_date|date:"d M, Y" }}</small>
+                    </td>
+                    <td>
+                        <a href="{% url 'custom_admin:payment_view' payment.id %}" class="btn btn-sm btn-success-custom">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-5">
+                        <div style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;">💳</div>
+                        <p style="color: #999;">No payments found</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

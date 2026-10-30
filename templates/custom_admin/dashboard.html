@@ -1,0 +1,141 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}📊 Dashboard Overview{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="content-card text-center">
+            <div style="font-size: 3rem; color: #ff6b35; margin-bottom: 0.5rem;">🕉️</div>
+            <h3 style="color: #8b0000; margin: 0;">{{ total_pujas }}</h3>
+            <p style="color: #666; margin: 0;">Total Pujas</p>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="content-card text-center">
+            <div style="font-size: 3rem; color: #28a745; margin-bottom: 0.5rem;">📅</div>
+            <h3 style="color: #8b0000; margin: 0;">{{ total_bookings }}</h3>
+            <p style="color: #666; margin: 0;">Total Bookings</p>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="content-card text-center">
+            <div style="font-size: 3rem; color: #ffc107; margin-bottom: 0.5rem;">💰</div>
+            <h3 style="color: #8b0000; margin: 0;">₹{{ total_revenue|floatformat:0 }}</h3>
+            <p style="color: #666; margin: 0;">Total Revenue</p>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="content-card text-center">
+            <div style="font-size: 3rem; color: #6f42c1; margin-bottom: 0.5rem;">👥</div>
+            <h3 style="color: #8b0000; margin: 0;">{{ total_users }}</h3>
+            <p style="color: #666; margin: 0;">Total Users</p>
+        </div>
+    </div>
+</div>
+
+<!-- This Month Stats -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="content-card">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1rem;">📈 This Month</h5>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="color: #666;">Bookings:</span>
+                <strong style="color: #28a745;">{{ month_bookings }}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #666;">Revenue:</span>
+                <strong style="color: #ffc107;">₹{{ month_revenue|floatformat:0 }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="content-card">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1rem;">⚠️ Pending</h5>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #666;">Pending Bookings:</span>
+                <strong style="color: #dc3545;">{{ pending_bookings }}</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="content-card">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1rem;">🌟 Quick Actions</h5>
+            <a href="{% url 'custom_admin:puja_add' %}" class="btn btn-primary-custom w-100 mb-2">
+                <i class="bi bi-plus-circle"></i> Add New Puja
+            </a>
+            <a href="{% url 'custom_admin:booking_list' %}?status=pending" class="btn btn-success-custom w-100">
+                <i class="bi bi-list-check"></i> View Pending
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Bookings -->
+<div class="content-card">
+    <h4 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">📋 Recent Bookings</h4>
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Puja</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in recent_bookings %}
+                <tr>
+                    <td>#{{ booking.id }}</td>
+                    <td>{{ booking.customer_name }}</td>
+                    <td>{{ booking.puja.name }}</td>
+                    <td>{{ booking.booking_date|date:"d M, Y" }}</td>
+                    <td>₹{{ booking.total_amount }}</td>
+                    <td>
+                        <span class="badge badge-custom bg-{{ booking.status_badge_class }}">
+                            {{ booking.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge badge-custom {% if booking.payment_status == 'paid' %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ booking.get_payment_status_display }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">No bookings yet</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Popular Pujas -->
+<div class="content-card mt-4">
+    <h4 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">🌟 Popular Pujas</h4>
+    <div class="row">
+        {% for puja in popular_pujas %}
+        <div class="col-md-4 mb-3">
+            <div style="background: linear-gradient(135deg, #fff9f0 0%, #ffe8cc 100%); border: 2px solid #d4a574; border-radius: 12px; padding: 1.5rem; text-align: center;">
+                <h6 style="color: #8b0000; font-weight: 700;">{{ puja.name }}</h6>
+                <p style="color: #666; margin: 0.5rem 0;">{{ puja.booking_count }} Bookings</p>
+                <span class="badge badge-custom bg-success">₹{{ puja.price }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,639 @@
+{% extends 'base.html' %}
+
+{% block title %}UPI Payment - VedaMandir{% endblock %}
+
+{% block content %}
+<style>
+    /* Hindu-inspired UPI Payment Page Styling */
+    .payment-container {
+        background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+        min-height: 100vh;
+        padding: 60px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .payment-container::before {
+        content: '🕉️';
+        position: absolute;
+        top: 30px;
+        left: 30px;
+        font-size: 120px;
+        opacity: 0.05;
+        transform: rotate(-20deg);
+    }
+    
+    .payment-container::after {
+        content: '🕉️';
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        font-size: 120px;
+        opacity: 0.05;
+        transform: rotate(20deg);
+    }
+    
+    .payment-card {
+        background: white;
+        border: 3px solid #d4a574;
+        border-radius: 25px;
+        box-shadow: 0 20px 60px rgba(212, 165, 116, 0.5);
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .payment-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 12px;
+        background: linear-gradient(90deg, #ff6b35 0%, #f7931e 25%, #ffc107 50%, #f7931e 75%, #ff6b35 100%);
+    }
+    
+    .payment-header {
+        background: linear-gradient(135deg, #8b0000 0%, #b30000 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+        position: relative;
+    }
+    
+    .payment-header h2 {
+        font-family: 'Georgia', serif;
+        font-weight: 700;
+        font-size: 2.2rem;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .payment-header::after {
+        content: '💐';
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 2.5rem;
+    }
+    
+    .payment-header::before {
+        content: '💐';
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 2.5rem;
+    }
+    
+    .lotus-divider {
+        text-align: center;
+        font-size: 2.5rem;
+        margin: 20px 0;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+    
+    .booking-summary {
+        background: linear-gradient(135deg, #fff9f0 0%, #ffe4cc 100%);
+        border: 2px solid #d4a574;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 30px;
+        box-shadow: 0 5px 20px rgba(212, 165, 116, 0.3);
+    }
+    
+    .booking-summary h5 {
+        color: #8b0000;
+        font-weight: 700;
+        font-family: 'Georgia', serif;
+        border-bottom: 3px solid #ff6b35;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .summary-item {
+        background: white;
+        padding: 12px 20px;
+        margin: 10px 0;
+        border-left: 4px solid #ff6b35;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .summary-item strong {
+        color: #8b0000;
+        font-weight: 600;
+    }
+    
+    .amount-highlight {
+        font-size: 2.5rem;
+        color: #28a745;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(40, 167, 69, 0.2);
+    }
+    
+    .upi-section {
+        background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        border: 3px solid #4caf50;
+        border-radius: 20px;
+        padding: 30px;
+        margin: 30px;
+        position: relative;
+        box-shadow: 0 8px 30px rgba(76, 175, 80, 0.3);
+    }
+    
+    .upi-section::before {
+        content: '📱';
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        font-size: 2rem;
+    }
+    
+    .upi-section::after {
+        content: '📱';
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 2rem;
+    }
+    
+    .upi-id-display {
+        background: white;
+        border: 3px solid #4caf50;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        margin: 20px 0;
+        box-shadow: 0 5px 20px rgba(76, 175, 80, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .upi-id-display::before {
+        content: '✨';
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        font-size: 1.5rem;
+        animation: sparkle 1.5s ease-in-out infinite;
+    }
+    
+    .upi-id-display::after {
+        content: '✨';
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 1.5rem;
+        animation: sparkle 1.5s ease-in-out infinite 0.75s;
+    }
+    
+    @keyframes sparkle {
+        0%, 100% {
+            opacity: 0.3;
+            transform: scale(1);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+    }
+    
+    .upi-id-text {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2e7d32;
+        font-family: 'Courier New', monospace;
+        letter-spacing: 2px;
+        margin: 10px 0;
+    }
+    
+    .btn-copy-upi {
+        background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 12px 30px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+    
+    .btn-copy-upi:hover {
+        background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(76, 175, 80, 0.5);
+        color: white;
+    }
+    
+    .qr-container {
+        background: white;
+        border: 4px solid #d4a574;
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        margin: 25px 0;
+        box-shadow: 0 10px 40px rgba(212, 165, 116, 0.3);
+        position: relative;
+    }
+    
+    .qr-container::before,
+    .qr-container::after {
+        content: '🪷';
+        position: absolute;
+        font-size: 2rem;
+    }
+    
+    .qr-container::before {
+        top: -15px;
+        left: -15px;
+    }
+    
+    .qr-container::after {
+        bottom: -15px;
+        right: -15px;
+    }
+    
+    .qr-code-wrapper {
+        background: linear-gradient(135deg, #fff9f0 0%, #ffe8cc 100%);
+        border: 3px solid #ff6b35;
+        border-radius: 15px;
+        padding: 20px;
+        display: inline-block;
+        box-shadow: 0 5px 20px rgba(255, 107, 53, 0.3);
+    }
+    
+    .qr-code-wrapper img {
+        border-radius: 10px;
+    }
+    
+    .payment-apps {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin: 25px 0;
+    }
+    
+    .btn-payment-app {
+        background: white;
+        border: 2px solid #d4a574;
+        color: #8b0000;
+        font-weight: 600;
+        padding: 15px 25px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-payment-app:hover {
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        border-color: #ff6b35;
+    }
+    
+    .transaction-form {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        border: 3px solid #2196f3;
+        border-radius: 20px;
+        padding: 30px;
+        margin: 30px;
+        box-shadow: 0 8px 30px rgba(33, 150, 243, 0.3);
+    }
+    
+    .transaction-form h5 {
+        color: #0d47a1;
+        font-weight: 700;
+        font-family: 'Georgia', serif;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+    }
+    
+    .form-control-custom {
+        border: 2px solid #2196f3;
+        border-radius: 10px;
+        padding: 15px;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control-custom:focus {
+        border-color: #1976d2;
+        box-shadow: 0 0 0 0.3rem rgba(33, 150, 243, 0.25);
+        transform: scale(1.02);
+    }
+    
+    .btn-confirm-payment {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 18px 40px;
+        border-radius: 12px;
+        font-size: 1.3rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+        width: 100%;
+        margin: 10px 0;
+    }
+    
+    .btn-confirm-payment:hover {
+        background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.5);
+        color: white;
+    }
+    
+    .btn-pay-later {
+        background: white;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        font-weight: 600;
+        padding: 15px 40px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+    
+    .btn-pay-later:hover {
+        background: #6c757d;
+        color: white;
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+    
+    .instructions-box {
+        background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+        border: 3px solid #fbc02d;
+        border-radius: 20px;
+        padding: 25px;
+        margin: 30px;
+        box-shadow: 0 5px 20px rgba(251, 192, 45, 0.3);
+    }
+    
+    .instructions-box h6 {
+        color: #f57f17;
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    
+    .instructions-box ol {
+        color: #5d4037;
+        font-weight: 500;
+        line-height: 1.8;
+    }
+    
+    .instructions-box ol li {
+        margin: 10px 0;
+    }
+    
+    .decorative-pattern {
+        position: absolute;
+        font-size: 3rem;
+        opacity: 0.1;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .pattern-1 {
+        top: 10%;
+        left: 5%;
+        animation-delay: 0s;
+    }
+    
+    .pattern-2 {
+        top: 30%;
+        right: 5%;
+        animation-delay: 1s;
+    }
+    
+    .pattern-3 {
+        bottom: 20%;
+        left: 8%;
+        animation-delay: 2s;
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-15px) rotate(5deg);
+        }
+    }
+    
+    .section-title {
+        color: #8b0000;
+        font-family: 'Georgia', serif;
+        font-weight: 700;
+        text-align: center;
+        margin: 20px 0;
+        font-size: 1.4rem;
+        position: relative;
+        padding-bottom: 10px;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #ff6b35, transparent);
+    }
+</style>
+
+<div class="payment-container">
+    <!-- Decorative Patterns -->
+    <div class="decorative-pattern pattern-1">🌺</div>
+    <div class="decorative-pattern pattern-2">🪷</div>
+    <div class="decorative-pattern pattern-3">🌸</div>
+    
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <div class="payment-card">
+                    <!-- Header -->
+                    <div class="payment-header">
+                        <h2>🙏 Complete Your Sacred Booking 🙏</h2>
+                    </div>
+                    
+                    <div class="lotus-divider">🪷</div>
+                    
+                    <!-- Booking Summary -->
+                    <div class="booking-summary">
+                        <h5>📋 Booking Summary</h5>
+                        
+                        <div class="summary-item">
+                            <strong>🕉️ Puja:</strong> {{ booking.puja.name }}
+                        </div>
+                        
+                        <div class="summary-item">
+                            <strong>🆔 Booking ID:</strong> #{{ booking.id }}
+                        </div>
+                        
+                        <div class="summary-item">
+                            <strong>📅 Date:</strong> {{ booking.booking_date|date:"d M, Y" }}
+                        </div>
+                        
+                        <div class="summary-item text-center">
+                            <strong>💰 Amount to Pay:</strong><br>
+                            <span class="amount-highlight">₹{{ booking.total_amount }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="lotus-divider">🪷</div>
+                    
+                    <!-- UPI Payment Section -->
+                    <div class="upi-section">
+                        <h3 class="section-title">💳 Pay via UPI</h3>
+                        
+                        <!-- UPI ID Display -->
+                        <div class="upi-id-display">
+                            <h6 style="color: #2e7d32; font-weight: 600;">Pay to this UPI ID:</h6>
+                            <div class="upi-id-text">9502657244@ptsbi</div>
+                            <button class="btn btn-copy-upi" onclick="copyUPI()">
+                                📋 Copy UPI ID
+                            </button>
+                        </div>
+                        
+                        <!-- QR Code -->
+                        <div class="qr-container">
+                            <h6 class="section-title">📱 Scan QR Code</h6>
+                            <div class="qr-code-wrapper">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=9502657244@ptsbi%26pn=VedaMandir%26am={{ booking.total_amount }}%26cu=INR" 
+                                     alt="UPI QR Code" 
+                                     class="img-fluid" 
+                                     style="max-width: 280px; border-radius: 10px;">
+                            </div>
+                            <p class="text-muted mt-3" style="font-weight: 500;">
+                                🌟 Scan with any UPI app 🌟<br>
+                                <small>Google Pay • PhonePe • Paytm • BHIM</small>
+                            </p>
+                        </div>
+                        
+                        <!-- Payment App Buttons -->
+                        <h6 class="section-title">🚀 Quick Pay With</h6>
+                        <div class="payment-apps">
+                            <a href="upi://pay?pa=9502657244@ptsbi&pn=VedaMandir&am={{ booking.total_amount }}&cu=INR" class="btn-payment-app">
+                                📱 Google Pay
+                            </a>
+                            <a href="phonepe://pay?pa=9502657244@ptsbi&pn=VedaMandir&am={{ booking.total_amount }}&cu=INR" class="btn-payment-app">
+                                💜 PhonePe
+                            </a>
+                            <a href="paytmmp://pay?pa=9502657244@ptsbi&pn=VedaMandir&am={{ booking.total_amount }}&cu=INR" class="btn-payment-app">
+                                💙 Paytm
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="lotus-divider">🪷</div>
+                    
+                    <!-- Transaction ID Form -->
+                    <div class="transaction-form">
+                        <h5>✅ Confirm Your Payment</h5>
+                        <p style="text-align: center; color: #0d47a1; font-weight: 500; margin-bottom: 25px;">
+                            After completing payment, enter your UPI Transaction ID below
+                        </p>
+                        
+                        <form method="POST" action="{% url 'payments:confirm_payment' payment.id %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label for="transaction_id" class="form-label" style="font-weight: 600; color: #0d47a1;">
+                                    🔢 UPI Transaction ID / Reference Number *
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-custom" 
+                                       id="transaction_id" 
+                                       name="transaction_id" 
+                                       placeholder="Enter 12-digit transaction ID (e.g., 412345678901)"
+                                       required>
+                                <div class="form-text" style="font-weight: 500; margin-top: 10px;">
+                                    💡 Find this in your UPI app's transaction history
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-confirm-payment">
+                                ✨ Confirm Payment & Complete Booking ✨
+                            </button>
+                            
+                            <a href="{% url 'bookings:booking_success' booking.id %}" class="btn-pay-later">
+                                ⏰ I'll Pay Later
+                            </a>
+                        </form>
+                    </div>
+                    
+                    <div class="lotus-divider">🪷</div>
+                    
+                    <!-- Instructions -->
+                    <div class="instructions-box">
+                        <h6>📝 Payment Instructions</h6>
+                        <ol>
+                            <li>📱 Open any UPI app (Google Pay, PhonePe, Paytm, etc.)</li>
+                            <li>💰 Pay exactly <strong>₹{{ booking.total_amount }}</strong> to UPI ID: <strong>9502657244@ptsbi</strong></li>
+                            <li>📸 You can also scan the QR code shown above</li>
+                            <li>🔢 After payment, note down the 12-digit UPI Transaction ID</li>
+                            <li>✍️ Enter the Transaction ID in the form above</li>
+                            <li>✅ Your booking will be confirmed instantly after verification</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyUPI() {
+    const upiId = '9502657244@ptsbi';
+    navigator.clipboard.writeText(upiId).then(function() {
+        // Success animation
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = '✅ Copied!';
+        button.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+        
+        setTimeout(function() {
+            button.innerHTML = originalText;
+            button.style.background = 'linear-gradient(135deg, #4caf50 0%, #66bb6a 100%)';
+        }, 2000);
+    }, function(err) {
+        alert('UPI ID: ' + upiId);
+    });
+}
+</script>
+
+{% endblock %}

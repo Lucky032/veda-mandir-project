@@ -1,0 +1,152 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Payment #{{ payment.id }}{% endblock %}
+{% block page_title %}💳 Payment Details #{{ payment.id }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Payment Details -->
+    <div class="col-md-8">
+        <div class="content-card">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">💰 Payment Information</h5>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <label style="color: #666; font-weight: 600;">Payment ID</label>
+                    <p style="font-size: 1.3rem; color: #8b0000; font-weight: 700; margin: 0;">#{{ payment.id }}</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label style="color: #666; font-weight: 600;">Amount</label>
+                    <p style="font-size: 1.8rem; color: #28a745; font-weight: 700; margin: 0;">₹{{ payment.amount }}</p>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <label style="color: #666; font-weight: 600;">Status</label>
+                    <p style="margin: 0;">
+                        <span class="badge badge-custom bg-{{ payment.status_badge_class }}" style="font-size: 1.1rem;">
+                            {{ payment.get_payment_status_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <hr style="margin: 1.5rem 0;">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Payment Method</label>
+                    <p style="margin: 0;">
+                        <span class="badge badge-custom" style="background: #6c757d; font-size: 1rem;">
+                            {{ payment.get_payment_method_display }}
+                        </span>
+                    </p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Payment Date</label>
+                    <p style="margin: 0;">{{ payment.payment_date|date:"d M, Y h:i A" }}</p>
+                </div>
+            </div>
+
+            {% if payment.transaction_id %}
+            <hr style="margin: 1.5rem 0;">
+            <div class="mb-3">
+                <label style="color: #666; font-weight: 600;">Transaction ID</label>
+                <div style="background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 10px; padding: 1rem;">
+                    <code style="font-size: 1.1rem; color: #212529;">{{ payment.transaction_id }}</code>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if payment.razorpay_payment_id %}
+            <hr style="margin: 1.5rem 0;">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1rem;">🔐 Razorpay Details</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Order ID</label>
+                    <p style="margin: 0;"><code>{{ payment.razorpay_order_id }}</code></p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Payment ID</label>
+                    <p style="margin: 0;"><code>{{ payment.razorpay_payment_id }}</code></p>
+                </div>
+            </div>
+            {% endif %}
+
+            <hr style="margin: 1.5rem 0;">
+
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">📋 Related Booking</h5>
+            
+            <div style="background: linear-gradient(135deg, #fff9f0 0%, #ffe8cc 100%); border: 2px solid #d4a574; border-radius: 12px; padding: 1.5rem;">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label style="color: #666; font-weight: 600;">Booking ID</label>
+                        <p style="margin: 0;">
+                            <a href="{% url 'custom_admin:booking_view' payment.booking.id %}" style="color: #ff6b35; font-weight: 700; font-size: 1.1rem;">
+                                #{{ payment.booking.id }}
+                            </a>
+                        </p>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label style="color: #666; font-weight: 600;">Customer</label>
+                        <p style="margin: 0; font-weight: 600;">{{ payment.booking.customer_name }}</p>
+                    </div>
+                    <div class="col-md-12 mb-2">
+                        <label style="color: #666; font-weight: 600;">Puja</label>
+                        <p style="margin: 0; color: #8b0000; font-weight: 700;">{{ payment.booking.puja.name }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="margin: 1.5rem 0;">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Created At</label>
+                    <p style="margin: 0;">{{ payment.created_at|date:"d M, Y h:i A" }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label style="color: #666; font-weight: 600;">Last Updated</label>
+                    <p style="margin: 0;">{{ payment.updated_at|date:"d M, Y h:i A" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions Sidebar -->
+    <div class="col-md-4">
+        <div class="content-card">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1.5rem;">⚙️ Quick Actions</h5>
+            
+            <div class="d-grid gap-2">
+                <a href="{% url 'custom_admin:booking_view' payment.booking.id %}" class="btn btn-primary-custom">
+                    <i class="bi bi-calendar-check"></i> View Booking
+                </a>
+                
+                <a href="{% url 'custom_admin:payment_list' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <!-- Payment Status -->
+        <div class="content-card mt-3">
+            <h5 style="color: #8b0000; font-weight: 700; margin-bottom: 1rem;">📊 Status</h5>
+            <div style="background: linear-gradient(135deg, #fff9f0 0%, #ffe8cc 100%); border-radius: 10px; padding: 1.5rem; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 0.5rem;">
+                    {% if payment.payment_status == 'completed' %}
+                        ✅
+                    {% elif payment.payment_status == 'pending' %}
+                        ⏳
+                    {% elif payment.payment_status == 'failed' %}
+                        ❌
+                    {% else %}
+                        🔄
+                    {% endif %}
+                </div>
+                <p style="margin: 0; color: #666; font-weight: 600;">
+                    {{ payment.get_payment_status_display }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

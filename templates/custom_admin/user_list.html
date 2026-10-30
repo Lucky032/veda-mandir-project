@@ -1,0 +1,133 @@
+{% extends 'custom_admin/base_admin.html' %}
+
+{% block title %}Manage Users{% endblock %}
+{% block page_title %}👥 Manage Users{% endblock %}
+
+{% block content %}
+<div class="content-card">
+    <!-- Header with Search -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 style="color: #8b0000; font-weight: 700; margin: 0;">All Users ({{ users.count }})</h4>
+        
+        <form method="GET" class="d-flex gap-2">
+            <input type="text" name="search" class="form-control" placeholder="Search users..." value="{{ search_query }}" style="width: 300px;">
+            <button type="submit" class="btn btn-success-custom">
+                <i class="bi bi-search"></i> Search
+            </button>
+        </form>
+    </div>
+
+    <!-- Users Table -->
+    <div class="table-responsive">
+        <table class="table table-custom">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Bookings</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td><strong>#{{ user.id }}</strong></td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ff6b35 0%, #ffc107 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.1rem;">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                            <strong style="color: #8b0000;">{{ user.username }}</strong>
+                        </div>
+                    </td>
+                    <td>
+                        {% if user.first_name or user.last_name %}
+                        {{ user.get_full_name }}
+                        {% else %}
+                        <span class="text-muted">Not provided</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.email %}
+                        <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                        {% else %}
+                        <span class="text-muted">No email</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.is_superuser %}
+                        <span class="badge badge-custom" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">
+                            <i class="bi bi-shield-fill-check"></i> Superuser
+                        </span>
+                        {% elif user.is_staff %}
+                        <span class="badge badge-custom" style="background: linear-gradient(135deg, #ff6b35 0%, #ffc107 100%);">
+                            <i class="bi bi-person-badge"></i> Staff
+                        </span>
+                        {% else %}
+                        <span class="badge badge-custom bg-secondary">
+                            <i class="bi bi-person"></i> User
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-custom bg-info">
+                            {{ user.bookings.count }} bookings
+                        </span>
+                    </td>
+                    <td>
+                        {% if user.is_active %}
+                        <span class="badge badge-custom bg-success">Active</span>
+                        {% else %}
+                        <span class="badge badge-custom bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <small style="color: #666;">{{ user.date_joined|date:"d M, Y" }}</small>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5">
+                        <div style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;">👥</div>
+                        <p style="color: #999;">No users found</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- User Statistics -->
+<div class="row mt-4">
+    <div class="col-md-4 mb-3">
+        <div class="content-card text-center">
+            <div style="font-size: 2.5rem; color: #ff6b35; margin-bottom: 0.5rem;">👤</div>
+            <h4 style="color: #8b0000; margin: 0;">{{ users|length }}</h4>
+            <p style="color: #666; margin: 0;">Total Users</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="content-card text-center">
+            <div style="font-size: 2.5rem; color: #28a745; margin-bottom: 0.5rem;">✅</div>
+            <h4 style="color: #8b0000; margin: 0;">{{ users|length }}</h4>
+            <p style="color: #666; margin: 0;">Active Users</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="content-card text-center">
+            <div style="font-size: 2.5rem; color: #ffc107; margin-bottom: 0.5rem;">👨‍💼</div>
+            <h4 style="color: #8b0000; margin: 0;">
+                {% for user in users %}
+                    {% if user.is_staff %}1{% endif %}
+                {% endfor %}
+            </h4>
+            <p style="color: #666; margin: 0;">Staff Members</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

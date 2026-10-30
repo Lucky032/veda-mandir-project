@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+
+{% block title %}Book {{ puja.name }} - VedaMandir{% endblock %}
+
+{% block content %}
+<style>
+    /* Custom Hindu-inspired styling */
+    .booking-container {
+        background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+        min-height: 100vh;
+        padding: 40px 0;
+    }
+    
+    .decorative-border {
+        border: 3px solid #d4a574;
+        border-radius: 15px;
+        background: linear-gradient(to bottom, #ffffff 0%, #fffbf5 100%);
+        box-shadow: 0 8px 30px rgba(212, 165, 116, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .decorative-border::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 8px;
+        background: linear-gradient(90deg, #ff6b35 0%, #f7931e 25%, #ffc107 50%, #f7931e 75%, #ff6b35 100%);
+    }
+    
+    .decorative-border::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 8px;
+        background: linear-gradient(90deg, #ff6b35 0%, #f7931e 25%, #ffc107 50%, #f7931e 75%, #ff6b35 100%);
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+    }
+    
+    .page-header h2 {
+        color: #8b0000;
+        font-family: 'Georgia', serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        text-shadow: 2px 2px 4px rgba(139, 0, 0, 0.1);
+        position: relative;
+        display: inline-block;
+    }
+    
+    .page-header h2::before,
+    .page-header h2::after {
+        content: '🕉️';
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.5rem;
+        color: #ff6b35;
+    }
+    
+    .page-header h2::before {
+        left: -60px;
+    }
+    
+    .page-header h2::after {
+        right: -60px;
+    }
+    
+    .puja-summary-card {
+        background: linear-gradient(135deg, #fff9f0 0%, #ffe4cc 100%);
+        border: 2px solid #d4a574;
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 20px rgba(212, 165, 116, 0.2);
+    }
+    
+    .puja-summary-card h5 {
+        color: #8b0000;
+        font-weight: 600;
+        border-bottom: 2px solid #ff6b35;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+        font-family: 'Georgia', serif;
+    }
+    
+    .puja-detail-item {
+        background: white;
+        padding: 12px 20px;
+        margin: 10px 0;
+        border-left: 4px solid #ff6b35;
+        border-radius: 5px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .puja-detail-item strong {
+        color: #8b0000;
+        font-weight: 600;
+    }
+    
+    .form-card {
+        background: white;
+        padding: 35px;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-card h5 {
+        color: #8b0000;
+        font-weight: 600;
+        margin-bottom: 25px;
+        font-family: 'Georgia', serif;
+        font-size: 1.5rem;
+        text-align: center;
+        border-bottom: 2px solid #ffc107;
+        padding-bottom: 15px;
+    }
+    
+    .form-label {
+        color: #5d4037;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .form-control {
+        border: 2px solid #d4a574;
+        border-radius: 8px;
+        padding: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #ff6b35;
+        box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+    }
+    
+    .btn-primary-custom {
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+    }
+    
+    .btn-primary-custom:hover {
+        background: linear-gradient(135deg, #e55a24 0%, #e6820d 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 107, 53, 0.5);
+    }
+    
+    .btn-secondary-custom {
+        background: white;
+        border: 2px solid #8b0000;
+        color: #8b0000;
+        font-weight: 600;
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary-custom:hover {
+        background: #8b0000;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .lotus-divider {
+        text-align: center;
+        margin: 20px 0;
+        color: #ff6b35;
+        font-size: 1.5rem;
+    }
+    
+    .mandala-corner {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        opacity: 0.15;
+    }
+    
+    .mandala-corner.top-left {
+        top: 10px;
+        left: 10px;
+        background: radial-gradient(circle, #ff6b35 0%, transparent 70%);
+    }
+    
+    .mandala-corner.top-right {
+        top: 10px;
+        right: 10px;
+        background: radial-gradient(circle, #ffc107 0%, transparent 70%);
+    }
+    
+    .mandala-corner.bottom-left {
+        bottom: 10px;
+        left: 10px;
+        background: radial-gradient(circle, #ffc107 0%, transparent 70%);
+    }
+    
+    .mandala-corner.bottom-right {
+        bottom: 10px;
+        right: 10px;
+        background: radial-gradient(circle, #ff6b35 0%, transparent 70%);
+    }
+</style>
+
+<div class="booking-container">
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h2>Book {{ puja.name }}</h2>
+                    <div class="lotus-divider">🪷</div>
+                </div>
+                
+                <!-- Puja Summary -->
+                <div class="puja-summary-card decorative-border">
+                    <div class="mandala-corner top-left"></div>
+                    <div class="mandala-corner top-right"></div>
+                    <h5>📿 Puja Details</h5>
+                    <div class="puja-detail-item">
+                        <strong>💰 Price:</strong> ₹{{ puja.price }}
+                    </div>
+                    <div class="puja-detail-item">
+                        <strong>⏱️ Duration:</strong> {{ puja.duration }} minutes
+                    </div>
+                    <div class="mandala-corner bottom-left"></div>
+                    <div class="mandala-corner bottom-right"></div>
+                </div>
+                
+                <!-- Booking Form -->
+                <div class="decorative-border">
+                    <div class="form-card">
+                        <h5>🙏 Your Details</h5>
+                        <form method="POST">
+                            {% csrf_token %}
+                            
+                            <div class="mb-4">
+                                <label for="name" class="form-label">👤 Full Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Enter your full name" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="email" class="form-label">📧 Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="your.email@example.com" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="phone" class="form-label">📱 Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 XXXXX XXXXX" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="booking_date" class="form-label">📅 Preferred Date *</label>
+                                <input type="date" class="form-control" id="booking_date" name="booking_date" required>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="special_requests" class="form-label">✍️ Special Requests (Optional)</label>
+                                <textarea class="form-control" id="special_requests" name="special_requests" rows="4" placeholder="Any specific requirements or requests for the puja ceremony..."></textarea>
+                            </div>
+                            
+                            <div class="lotus-divider">🪷</div>
+                            
+                            <div class="d-grid gap-3 mt-4">
+                                <button type="submit" class="btn btn-primary-custom btn-lg">
+                                    ✨ Confirm Booking ✨
+                                </button>
+                                <a href="{% url 'pujas:puja_detail' puja.id %}" class="btn btn-secondary-custom">
+                                    ← Go Back
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set minimum date to today - prevents booking past dates
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    const minDate = year + '-' + month + '-' + day;
+    
+    const dateInput = document.getElementById('booking_date');
+    dateInput.setAttribute('min', minDate);
+    
+    // Optional: Set max date to 90 days from today (3 months advance booking)
+    const maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 90);
+    const maxYear = maxDate.getFullYear();
+    const maxMonth = String(maxDate.getMonth() + 1).padStart(2, '0');
+    const maxDay = String(maxDate.getDate()).padStart(2, '0');
+    const maxDateFormatted = maxYear + '-' + maxMonth + '-' + maxDay;
+    dateInput.setAttribute('max', maxDateFormatted);
+});
+</script>
+
+{% endblock %}

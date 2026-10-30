@@ -1,0 +1,443 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Confirmed - VedaMandir{% endblock %}
+
+{% block content %}
+<style>
+    /* Hindu-inspired Success Page Styling */
+    .success-container {
+        background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+        min-height: 100vh;
+        padding: 60px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .success-container::before {
+        content: '🕉️';
+        position: absolute;
+        top: 50px;
+        left: 50px;
+        font-size: 150px;
+        opacity: 0.05;
+        transform: rotate(-15deg);
+    }
+    
+    .success-container::after {
+        content: '🕉️';
+        position: absolute;
+        bottom: 50px;
+        right: 50px;
+        font-size: 150px;
+        opacity: 0.05;
+        transform: rotate(15deg);
+    }
+    
+    .success-card {
+        background: white;
+        border: 3px solid #d4a574;
+        border-radius: 20px;
+        box-shadow: 0 15px 50px rgba(212, 165, 116, 0.4);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .success-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: linear-gradient(90deg, #ff6b35 0%, #f7931e 25%, #ffc107 50%, #f7931e 75%, #ff6b35 100%);
+    }
+    
+    .success-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 10px;
+        background: linear-gradient(90deg, #ff6b35 0%, #f7931e 25%, #ffc107 50%, #f7931e 75%, #ff6b35 100%);
+    }
+    
+    .success-icon-wrapper {
+        position: relative;
+        display: inline-block;
+        margin: 30px 0 20px;
+    }
+    
+    .success-icon {
+        font-size: 5rem;
+        color: #28a745;
+        animation: successPulse 2s ease-in-out infinite;
+        filter: drop-shadow(0 5px 15px rgba(40, 167, 69, 0.4));
+    }
+    
+    @keyframes successPulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+    
+    .floating-flowers {
+        position: absolute;
+        font-size: 2rem;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .flower-1 {
+        top: 20%;
+        left: 10%;
+        animation-delay: 0s;
+    }
+    
+    .flower-2 {
+        top: 20%;
+        right: 10%;
+        animation-delay: 0.5s;
+    }
+    
+    .flower-3 {
+        top: 60%;
+        left: 15%;
+        animation-delay: 1s;
+    }
+    
+    .flower-4 {
+        top: 60%;
+        right: 15%;
+        animation-delay: 1.5s;
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-20px) rotate(10deg);
+        }
+    }
+    
+    .success-header h1 {
+        color: #8b0000;
+        font-family: 'Georgia', serif;
+        font-weight: 700;
+        font-size: 2.8rem;
+        margin-top: 20px;
+        text-shadow: 2px 2px 4px rgba(139, 0, 0, 0.1);
+    }
+    
+    .success-subtitle {
+        color: #5d4037;
+        font-size: 1.3rem;
+        font-weight: 500;
+        margin-bottom: 30px;
+    }
+    
+    .lotus-divider {
+        font-size: 2rem;
+        color: #ff6b35;
+        margin: 25px 0;
+        animation: rotate 4s linear infinite;
+    }
+    
+    @keyframes rotate {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    
+    .booking-details-card {
+        background: linear-gradient(135deg, #fff9f0 0%, #ffe4cc 100%);
+        border: 2px solid #d4a574;
+        border-radius: 15px;
+        padding: 30px;
+        text-align: left;
+        margin: 30px auto;
+        max-width: 600px;
+        box-shadow: 0 8px 25px rgba(212, 165, 116, 0.3);
+        position: relative;
+    }
+    
+    .booking-details-card h5 {
+        color: #8b0000;
+        font-weight: 700;
+        font-family: 'Georgia', serif;
+        font-size: 1.5rem;
+        border-bottom: 3px solid #ff6b35;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+    
+    .detail-row {
+        background: white;
+        padding: 15px 20px;
+        margin: 12px 0;
+        border-left: 5px solid #ff6b35;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .detail-row:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.2);
+    }
+    
+    .detail-row strong {
+        color: #8b0000;
+        font-weight: 600;
+        display: inline-block;
+        min-width: 150px;
+    }
+    
+    .badge-custom {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 20px;
+    }
+    
+    .badge-success-custom {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+    }
+    
+    .badge-warning-custom {
+        background: linear-gradient(135deg, #ffc107 0%, #ff6b35 100%);
+        color: white;
+    }
+    
+    .badge-danger-custom {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+    }
+    
+    .confirmation-message {
+        color: #5d4037;
+        font-size: 1.1rem;
+        margin: 25px 0;
+        padding: 15px;
+        background: #fff9f0;
+        border-radius: 10px;
+        border: 1px dashed #d4a574;
+    }
+    
+    .btn-pay-now {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        padding: 18px 40px;
+        border-radius: 10px;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+        margin: 10px;
+    }
+    
+    .btn-pay-now:hover {
+        background: linear-gradient(135deg, #218838 0%, #1aa179 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.5);
+        color: white;
+    }
+    
+    .btn-home-custom {
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 15px 35px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        margin: 10px;
+        box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    }
+    
+    .btn-home-custom:hover {
+        background: linear-gradient(135deg, #e55a24 0%, #e6820d 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 107, 53, 0.4);
+        color: white;
+    }
+    
+    .btn-browse-custom {
+        background: white;
+        border: 2px solid #8b0000;
+        color: #8b0000;
+        font-weight: 600;
+        padding: 15px 35px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        margin: 10px;
+    }
+    
+    .btn-browse-custom:hover {
+        background: #8b0000;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .decorative-corner {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border: 3px solid #ffc107;
+    }
+    
+    .corner-tl {
+        top: 15px;
+        left: 15px;
+        border-right: none;
+        border-bottom: none;
+        border-radius: 10px 0 0 0;
+    }
+    
+    .corner-tr {
+        top: 15px;
+        right: 15px;
+        border-left: none;
+        border-bottom: none;
+        border-radius: 0 10px 0 0;
+    }
+    
+    .corner-bl {
+        bottom: 15px;
+        left: 15px;
+        border-right: none;
+        border-top: none;
+        border-radius: 0 0 0 10px;
+    }
+    
+    .corner-br {
+        bottom: 15px;
+        right: 15px;
+        border-left: none;
+        border-top: none;
+        border-radius: 0 0 10px 0;
+    }
+</style>
+
+<div class="success-container">
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-10 col-lg-9 mx-auto">
+                <div class="success-card">
+                    <!-- Floating Flowers -->
+                    <div class="floating-flowers flower-1">🌺</div>
+                    <div class="floating-flowers flower-2">🌸</div>
+                    <div class="floating-flowers flower-3">🪷</div>
+                    <div class="floating-flowers flower-4">🌼</div>
+                    
+                    <div class="card-body py-5 px-4">
+                        <!-- Success Icon -->
+                        <div class="success-icon-wrapper">
+                            <div class="success-icon">✅</div>
+                        </div>
+                        
+                        <!-- Header -->
+                        <div class="success-header">
+                            <h1>🙏 Booking Confirmed! 🙏</h1>
+                            <div class="lotus-divider">🪷</div>
+                            <p class="success-subtitle">Thank you for booking with VedaMandir</p>
+                        </div>
+                        
+                        <!-- Booking Details Card -->
+                        <div class="booking-details-card">
+                            <div class="decorative-corner corner-tl"></div>
+                            <div class="decorative-corner corner-tr"></div>
+                            
+                            <h5>📋 Booking Details</h5>
+                            
+                            <div class="detail-row">
+                                <strong>🆔 Booking ID:</strong> #{{ booking.id }}
+                            </div>
+                            
+                            <div class="detail-row">
+                                <strong>🕉️ Puja:</strong> {{ booking.puja.name }}
+                            </div>
+                            
+                            <div class="detail-row">
+                                <strong>📅 Date:</strong> {{ booking.booking_date|date:"d M, Y" }}
+                            </div>
+                            
+                            <div class="detail-row">
+                                <strong>💰 Amount:</strong> ₹{{ booking.total_amount }}
+                            </div>
+                            
+                            <div class="detail-row">
+                                <strong>📊 Status:</strong> 
+                                {% if booking.status == 'confirmed' %}
+                                <span class="badge badge-custom badge-success-custom">✓ {{ booking.status|upper }}</span>
+                                {% else %}
+                                <span class="badge badge-custom badge-warning-custom">⏳ {{ booking.status|upper }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="detail-row">
+                                <strong>💳 Payment Status:</strong> 
+                                {% if booking.payment_status == 'paid' %}
+                                <span class="badge badge-custom badge-success-custom">✓ PAID</span>
+                                {% else %}
+                                <span class="badge badge-custom badge-danger-custom">⚠ UNPAID</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="decorative-corner corner-bl"></div>
+                            <div class="decorative-corner corner-br"></div>
+                        </div>
+                        
+                        <!-- Confirmation Message -->
+                        <div class="confirmation-message">
+                            📧 A confirmation email has been sent to <strong>{{ booking.customer_email }}</strong>
+                        </div>
+                        
+                        <div class="lotus-divider">🪷</div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="mt-4">
+                            {% if booking.payment_status == 'unpaid' %}
+                            <div class="mb-3">
+                                {% if 'payments:initiate_payment' in request.resolver_match.app_names or True %}
+                                    {% url 'payments:initiate_payment' booking.id as payment_url %}
+                                    <!-- CORRECT - USE THIS -->
+                                    <a href="{% url 'payments:initiate_payment' booking.id %}" class="btn btn-pay-now">
+                                        💳 Pay Now - ₹{{ booking.total_amount }}
+                                    </a>
+
+                                {% else %}
+                                    <button class="btn btn-pay-now" onclick="alert('Payment feature will be available soon!')">
+                                        💳 Pay Now - ₹{{ booking.total_amount }}
+                                    </button>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="d-flex flex-wrap justify-content-center">
+                                <a href="/" class="btn btn-home-custom">
+                                    🏠 Back to Home
+                                </a>
+                                <a href="/pujas/" class="btn btn-browse-custom">
+                                    🔍 Browse More Pujas
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

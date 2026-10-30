@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Successful - VedaMandir{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto text-center">
+            <div class="card shadow">
+                <div class="card-body py-5">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                    <h1 class="mt-4">Payment Successful!</h1>
+                    <p class="lead">Thank you for your payment</p>
+                    
+                    <div class="alert alert-success mt-4 text-start">
+                        <h5><i class="bi bi-receipt"></i> Payment Details</h5>
+                        <p><strong>Transaction ID:</strong> {{ payment.transaction_id }}</p>
+                        <p><strong>Amount Paid:</strong> ₹{{ payment.amount }}</p>
+                        <p><strong>Payment Method:</strong> UPI</p>
+                        <p><strong>Booking ID:</strong> #{{ booking.id }}</p>
+                        <p><strong>Puja:</strong> {{ booking.puja.name }}</p>
+                        <p><strong>Date:</strong> {{ booking.booking_date|date:"d M, Y" }}</p>
+                        <p class="mb-0"><strong>Status:</strong> <span class="badge bg-success">CONFIRMED</span></p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Your booking is being verified. You will receive a confirmation call/email shortly.
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="/bookings/my-bookings/" class="btn btn-primary me-2">
+                            <i class="bi bi-calendar-check"></i> View My Bookings
+                        </a>
+                        <a href="/" class="btn btn-outline-primary">
+                            <i class="bi bi-house"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
